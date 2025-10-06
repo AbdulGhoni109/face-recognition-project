@@ -1,18 +1,38 @@
 # data_collector.py
 import cv2
 import os
+import json
 
 def collect_dataset():
+    # --- Inisialisasi ---
     dataset_path = "dataset/"
     if not os.path.exists(dataset_path):
         os.makedirs(dataset_path)
 
     face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     cap = cv2.VideoCapture(0)
+    
+    # --- Memuat atau membuat file data nama ---
+    names_file = 'names.json'
+    
+    # KODE YANG DIPERBAIKI: Cek apakah file ada DAN tidak kosong
+    if os.path.exists(names_file) and os.path.getsize(names_file) > 0:
+        with open(names_file, 'r') as f:
+            names_data = json.load(f)
+    else:
+        # Jika file tidak ada atau kosong, mulai dengan dictionary kosong
+        names_data = {}
 
-    person_id = input("Masukkan ID untuk orang ini (angka, contoh: 1): ")
+    # --- Meminta Input ID dan Nama dari Pengguna ---
+    person_id = input("Masukkan ID (angka, contoh: 1): ")
+    if person_id in names_data:
+        print(f"[ERROR] ID {person_id} sudah digunakan untuk nama '{names_data[person_id]}'. Gunakan ID lain.")
+        return
+        
+    person_name = input(f"Masukkan Nama untuk ID {person_id}: ")
+
     print("\n[INFO] Memulai pengambilan gambar. Lihat ke kamera dan tunggu...")
-
+    
     count = 0
     while True:
         ret, frame = cap.read()
@@ -34,7 +54,12 @@ def collect_dataset():
         elif cv2.waitKey(1) == ord('q'):
             break
 
-    print("\n[INFO] Pengambilan dataset selesai.")
+    # --- Simpan nama baru ke file JSON ---
+    names_data[person_id] = person_name
+    with open(names_file, 'w') as f:
+        json.dump(names_data, f, indent=4)
+    print(f"\n[INFO] Data untuk ID {person_id} ({person_name}) berhasil disimpan.")
+
     cap.release()
     cv2.destroyAllWindows()
 

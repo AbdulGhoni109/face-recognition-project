@@ -1,16 +1,24 @@
 # recognizer.py
 import cv2
+import json
+import os
 
 def start_recognition():
+    # --- Memuat file data nama ---
+    names_file = 'names.json'
+    if not os.path.exists(names_file):
+        print(f"[ERROR] File '{names_file}' tidak ditemukan. Jalankan pengambilan dataset dulu.")
+        return
+        
+    with open(names_file, 'r') as f:
+        names_data = json.load(f)
+
+    # --- Inisialisasi Recognizer dan Kamera ---
     recognizer = cv2.face.LBPHFaceRecognizer_create()
     recognizer.read('models/face-model.yml') 
-    
     face_cascade = cv2.CascadeClassifier("haarcascade_frontalface_default.xml")
     font = cv2.FONT_HERSHEY_SIMPLEX
-
-    # TODO: SESUAIKAN DAFTAR NAMA INI DENGAN ID ANDA
-    names = ['Unknown', 'Nama Anda']  # names[1] untuk ID 1, names[2] untuk ID 2, dst.
-
+    
     cap = cv2.VideoCapture(0)
     print("\n[INFO] Memulai kamera. Tekan 'q' untuk keluar.")
 
@@ -27,7 +35,9 @@ def start_recognition():
             person_id, confidence = recognizer.predict(gray[y:y+h, x:x+w])
 
             if confidence < 100:
-                display_name = names[person_id] if person_id < len(names) else "ID Tidak Dikenal"
+                # Ambil nama dari data JSON menggunakan ID yang terdeteksi
+                # Kita ubah ID (int) ke string karena key di JSON adalah string
+                display_name = names_data.get(str(person_id), "ID Tidak Dikenal")
                 confidence_text = f" {round(100 - confidence)}%"
             else:
                 display_name = "Unknown"
