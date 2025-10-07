@@ -1,4 +1,4 @@
-# main.py
+# main.py (Versi LBPH)
 import os
 from data_collector import collect_dataset
 from trainer import train_model
@@ -7,7 +7,7 @@ from recognizer import start_recognition
 def main_menu():
     while True:
         print("\n" + "="*30)
-        print("   MENU UTAMA FACE RECOGNITION")
+        print("   MENU UTAMA FACE RECOGNITION (LBPH)")
         print("="*30)
         print("1. Ambil Dataset Wajah Baru")
         print("2. Latih Model")

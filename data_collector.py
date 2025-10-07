@@ -49,7 +49,7 @@ def collect_dataset():
             cv2.imwrite(f"{dataset_path}Person.{person_id}.{count}.jpg", gray[y:y+h, x:x+w])
             cv2.imshow("Pengambilan Dataset", frame)
 
-        if count >= 30:
+        if count >= 100:
             break
         elif cv2.waitKey(1) == ord('q'):
             break
